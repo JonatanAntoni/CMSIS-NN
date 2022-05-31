@@ -9,11 +9,8 @@
   <dominate info="CMSIS-NN alpha for component separation"/>
 
   <releases>
-    <release version="4.0.0-alpha">
+    <release version="0.0.0">
       Active development ...
-       - Changed return types of all API's
-       - Support for int16 average pooling DSP implementation
-       - Support for DSP extension optimization for int16 depthwise_conv
     </release>
   </releases>
   
@@ -26,7 +23,7 @@
   </conditions>
 
   <components>
-    <component Cclass="CMSIS" Cgroup="NN Lib" Cversion="4.0.0" condition="CMSIS NN">
+    <component Cclass="CMSIS" Cgroup="NN Lib" Cversion="0.0.0" condition="CMSIS NN">
       <description>CMSIS Neural Network Library</description>
       <files>
         <file category="doc" name="Documentation/html/index.html"/>
