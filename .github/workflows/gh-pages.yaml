@@ -52,12 +52,12 @@ jobs:
           echo "::add-matcher::.github/doxygen.json"
           ./gen_doc.sh
           echo "::remove-matcher owner=doxygen::"
-        working-directory: ./Doxygen
+        working-directory: ./DoxyGen
 
       - name: Run linkchecker
         run: |
           echo "::add-matcher::.github/linkchecker.json"
-          ../Script/check_links.sh ./html/index.html ./
+          ../Scripts/check_links.sh ./html/index.html ./
           echo "::remove-matcher owner=linkchecker::"
         working-directory: ./Documentation
 

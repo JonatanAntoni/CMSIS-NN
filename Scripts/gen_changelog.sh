@@ -12,6 +12,7 @@ function usage {
   echo "               text       Release notes in plain text."  
   echo "               pdsc       Release notes for PDSC"
   echo "               dxy        Release notes for Doxygen"
+  echo "               html       Release notes for HTML"
   echo "  -p|--pre                Include latest pre-release."
   echo "  tag-prefix              Prefix to filter tags."
   echo ""
@@ -45,8 +46,16 @@ function print_pdsc {
   else
     echo "  <release version=\"$1\" date=\"$2\">"
   fi
-  echo -e "$3" | sed "s/^/    /"
-  echo "  </release>"
+  echo -e "$3" | \
+    sed "s/^/    /" | \
+    sed "s/<br>//" | \
+    sed "s/<ul>//" | \
+    sed "s/<\/ul>//" | \
+    sed "s/<li>/- /" | \
+    sed "s/<\/li>//" | \
+    sed "s/[ ]*$//" | \
+    sed "/^$/d"
+  echo -e "  </release>"
 }
 
 function print_pdsc_tail {
@@ -54,7 +63,6 @@ function print_pdsc_tail {
 }
 
 function print_dxy_head {
-
   echo "/**"
   echo "\page history Revision History"
   echo ""
@@ -67,6 +75,32 @@ function print_dxy {
 }
 
 function print_dxy_tail {
+  echo ""
+  echo "*/"
+}
+
+function print_html_head {
+  echo "/**"
+  echo "\page history Revision History"
+  echo ""
+  echo "<table class=\"cmtable\" summary=\"Revision History\">"
+  echo "<tr>"
+  echo "  <th>Version</th>"
+  echo "  <th>Description</th>"
+  echo "</tr>"
+}
+
+function print_html {
+  echo "<tr>"
+  echo "  <td>$1</td>"
+  echo "  <td>"
+  echo -e "$3" | sed "s/^/    /"
+  echo "  </td>"
+  echo "</tr>"
+}
+
+function print_html_tail {
+  echo "</table>"
   echo ""
   echo "*/"
 }

@@ -39,8 +39,8 @@ rm -rf ${DIRNAME}/../Documentation/html
 sed -e "s/{projectNumber}/${VERSION}/" "${DIRNAME}/nn.dxy.in" \
   > "${DIRNAME}/nn.dxy"
 
-# echo "${CHANGELOG} -f dxy > History.txt"
-# "${CHANGELOG}" -f dxy 1> History.txt 2>/dev/null
+echo "${CHANGELOG} -f html > history.txt"
+"${CHANGELOG}" -f html 1> history.txt 2>/dev/null
 
 echo "${DOXYGEN} nn.dxy"
 "${DOXYGEN}" nn.dxy
