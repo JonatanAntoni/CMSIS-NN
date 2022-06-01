@@ -1,6 +1,6 @@
 #!/bin/bash
-# Version: 1.4
-# Date: 2022-05-10
+# Version: 1.5
+# Date: 2022-06-01
 # This bash script generates a CMSIS Software Pack:
 #
 # Pre-requisites:
@@ -8,8 +8,8 @@
 # - git in path (for Windows: install git for Windows)
 # - 7z in path (zip archiving utility)
 #   e.g. Ubuntu: sudo apt-get install p7zip-full p7zip-rar)
-# - PackChk is taken from latest install CMSIS Pack installed in $CMSIS_PACK_ROOT
-# - xmllint in path (XML schema validation; available only for Linux)
+# - packchk is taken from latest install CMSIS Pack installed in $CMSIS_PACK_ROOT
+# - xmllint in path (XML schema validation)
 
 ############### EDIT BELOW ###############
 # Extend Path environment variable locally
@@ -32,10 +32,8 @@ function usage {
   echo ""
   echo "Environment:"
   echo " 7z"
-  echo " PackChk"
-  if [ $(uname -s) = "Linux" ]; then
-    echo " xmllint"
-  fi
+  echo " packchk"
+  echo " xmllint (optional)"
   echo ""
 }
 
@@ -121,10 +119,7 @@ PACK_PATCH_FILES=""
 echo Starting CMSIS-Pack Generation: `date`
 # Zip utility check
 ZIP=7z
-type -a "${ZIP}"
-errorlevel=$?
-if [ $errorlevel -gt 0 ]
-  then
+if ! type -a "${ZIP}"; then
   echo "Error: No 7zip Utility found"
   echo "Action: Add 7zip to your path"
   echo " "
@@ -132,10 +127,8 @@ if [ $errorlevel -gt 0 ]
 fi
 
 # Pack checking utility check
-PACKCHK=PackChk
-type -a ${PACKCHK}
-errorlevel=$?
-if [ $errorlevel != 0 ]; then
+PACKCHK=packchk
+if ! type -a ${PACKCHK}; then
   echo "Error: No PackChk Utility found"
   echo "Action: Add PackChk to your path"
   echo "Hint: Included in CMSIS Pack:"
@@ -236,9 +229,16 @@ fi
 # Run Schema Check (for Linux only):
 # sudo apt-get install libxml2-utils
 
-if [ $(uname -s) = "Linux" ]; then
+
+if type -a xmllint; then
   echo "Running schema check for ${PACK_VENDOR}.${PACK_NAME}.pdsc"
-  xmllint --noout --schema "$(realpath -m ${CMSIS_TOOLSDIR}/../PACK.xsd)" "${PACK_BUILD}/${PACK_VENDOR}.${PACK_NAME}.pdsc"
+  SCHEMA=$(realpath -m ${CMSIS_TOOLSDIR}/../PACK.xsd)
+  if [ ! -f $SCHEMA ]; then
+    SCHEMAURL=$(grep -Pio "xs:noNamespaceSchemaLocation=\"\K[^\"]+" ${PACK_BUILD}/${PACK_VENDOR}.${PACK_NAME}.pdsc)
+    curl -L $SCHEMAURL --output PACK.xsd
+    SCHEMA="PACK.xsd"
+  fi
+  xmllint --noout --schema ${SCHEMA} "${PACK_BUILD}/${PACK_VENDOR}.${PACK_NAME}.pdsc"
   errorlevel=$?
   if [ $errorlevel -ne 0 ]; then
     echo "build aborted: Schema check of $PACK_VENDOR.$PACK_NAME.pdsc against PACK.xsd failed"

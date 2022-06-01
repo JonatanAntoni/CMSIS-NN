@@ -140,12 +140,12 @@ PREFIX="v"
 if [ -n "$1" ]; then
   PREFIX=$1
 fi
-TAGS=$(git for-each-ref --format "%(objecttype) %(refname)" --sort="-v:refname" "refs/tags/${PREFIX}*" 2>/dev/null | grep ^tag | cut -d\  -f2)
+TAGS=$(git for-each-ref --format "%(objecttype) %(refname)" --sort="-v:refname" "refs/tags/${PREFIX}*" 2>/dev/null | cut -d\  -f2)
 LATEST=$(${DESCRIBE} "${PREFIX}")
 
 print_${FORMAT}_head
 
-if [[ $PRERELEASE != 0 ]] && [[ "${LATEST}" != "$(head -1 <<< ${TAGS[0]#refs/tags/${PREFIX}})" ]]; then
+if [[ $PRERELEASE != 0 ]] && ! git rev-list "${PREFIX}${LATEST}" >/dev/null; then
   print_$FORMAT "${LATEST}" "" "Active development ..."
 fi
 
